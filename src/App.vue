@@ -1,26 +1,101 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <TheHeader />
+  <TheSearch />
+  <MovieList />
+  <TheFooter />
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import TheHeader from './components/TheHeader.vue';
+import TheSearch from './components/TheSearch.vue';
+import TheFooter from './components/TheFooter.vue';
+import MovieList from './components/MovieList.vue';
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    TheHeader,
+    TheFooter,
+    TheSearch,
+    MovieList
   }
 }
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  font-family: "Open Sans", sans-serif;
+  font-size: 16px;
+  background-color: #1c1c1c;
+  margin: 0;
+  padding: 0;
+}
+
+.wrap {
+  max-width: 1290px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+img {
+  width: 100%;
+  height: 100%;
+  vertical-align: middle;
+}
+
+a {
+  color: #fff;
+  opacity: 0.9;
+  text-decoration: none;
+}
+
+p {
+  margin: 0;
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+input, textarea, select {
+  font-family: inherit;
+}
+
+@media (max-width: 575.98px) {
+  html {
+    font-size: 14px;
+  }
+
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .menu {
+    display: none;
+  }
+
+  .menu > li {
+    display: block;
+    margin-top: 15px;
+  }
+
+  .hamburger-icon {
+    display: block;
+  }
 }
 </style>
