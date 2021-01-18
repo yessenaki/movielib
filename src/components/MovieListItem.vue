@@ -1,19 +1,30 @@
 <template>
-  <div class="movie-item">
+  <div class="movie-item" v-for="movie in movies" :key="movie.id">
     <div class="movie-poster">
       <a href="#">
-        <img src="https://flox-demo.pyxl.dev/assets/poster/cjr4NWURcVN3gW5FlHeabgBHLrY.jpg" alt="">
+        <img :src="movie.poster_full_path" :alt="movie.title">
       </a>
     </div>
     <div class="movie-info">
-      <span class="year">2021</span>
-      <a href="#" title="Wonder Women: 1984">Wonder Women: 1984</a>
-      <span class="genre">Drama</span>
+      <span class="year">{{ movie.release_year }}</span>
+      <a href="#" :title="movie.title">{{ movie.title }}</a>
+      <span class="genre">{{ movie.genres_string }}</span>
     </div>
   </div>
 </template>
 
+<script>
+export default {
+  name: 'MovieListItem',
+  inject: ['movies']
+}
+</script>
+
 <style>
+.movie-poster {
+  height: 21rem;
+}
+
 .movie-poster:hover {
   -webkit-box-shadow: 0 0 3px 3px #a91f49;
   box-shadow: 0 0 3px 3px #a91f49;

@@ -7,7 +7,7 @@
             <img src="../assets/img/icons/tmdb.svg" alt="The Movie DB">
           </a>
         </div>
-        <p class="tmdb-info">This product uses the TMDb API</p>
+        <p class="tmdb-info">This website uses the TMDb API</p>
       </div>
     </div>
   </footer>

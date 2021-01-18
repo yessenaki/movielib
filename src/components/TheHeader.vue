@@ -55,7 +55,7 @@ header {
 }
 
 .home-link a {
-  font-size: 27px;
+  font-size: 1.7rem;
   font-weight: 700;
   padding-right: 60px;
 }
@@ -72,7 +72,7 @@ header {
   width: 32px;
   height: 25px;
   position: absolute;
-  top: 7px;
+  top: 4px;
   right: 0;
   display: none;
   cursor: pointer;

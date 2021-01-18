@@ -1,7 +1,7 @@
 <template>
   <TheHeader />
   <TheSearch />
-  <MovieList />
+  <MovieList @load-more="getMovies" />
   <TheFooter />
 </template>
 
@@ -18,6 +18,81 @@ export default {
     TheFooter,
     TheSearch,
     MovieList
+  },
+  data() {
+    return {
+      apiKey: '******',
+      apiConfig: null,
+      movies: [],
+      genres: null,
+      page: 1
+    };
+  },
+  provide() {
+    return {
+      movies: this.movies,
+    };
+  },
+  methods: {
+    async getAPIConfig() {
+      if (this.apiConfig) {
+        return;
+      }
+
+      const response = await fetch(`https://api.themoviedb.org/3/configuration?api_key=${this.apiKey}`);
+      const data = await response.json();
+
+      this.apiConfig = data;
+    },
+    async getGenres() {
+      if (this.genres) {
+        return;
+      }
+
+      const response = await fetch(`https://api.themoviedb.org/3/genre/movie/list?api_key=${this.apiKey}`);
+      const data = await response.json();
+
+      let map = new Map();
+      for (let genre of data.genres) {
+        map.set(genre.id, genre.name);
+      }
+
+      this.genres = map;
+    },
+    async getMovies() {
+      await this.getAPIConfig();
+      await this.getGenres();
+
+      const response = await fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${this.apiKey}&page=${this.page}`);
+      const data = await response.json();
+      const movies = data.results;
+      const imageBaseURL = this.apiConfig.images.secure_base_url + this.apiConfig.images.poster_sizes[3];
+
+      console.log(this.apiConfig);
+      console.log(this.genres);
+      console.log(data);
+
+      for (let movie of movies) {
+        movie.poster_full_path = imageBaseURL + movie.poster_path;
+        movie.release_year = new Date(movie.release_date).getFullYear();
+        movie.genres_string = '';
+
+        let genreLength = movie.genre_ids.length;
+        movie.genre_ids.forEach((value, index) => {
+          movie.genres_string += this.genres.get(value);
+          if (genreLength > index + 1) {
+            movie.genres_string += ', ';
+          }
+        });
+
+        this.movies.push(movie);
+      }
+
+      this.page++;
+    }
+  },
+  created() {
+    this.getMovies();
   }
 }
 </script>
@@ -53,6 +128,7 @@ img {
   width: 100%;
   height: 100%;
   vertical-align: middle;
+  object-fit: cover;
 }
 
 a {
@@ -83,6 +159,10 @@ input, textarea, select {
   .header-content {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .home-link a {
+    padding-right: 0;
   }
 
   .menu {

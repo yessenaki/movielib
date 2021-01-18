@@ -20,7 +20,7 @@
       <div class="movie-list">
         <MovieListItem />
       </div>
-      <div class="load-more">Load more</div>
+      <div class="load-more" @click="$emit('load-more')">Load more</div>
     </div>
   </main>
 </template>
@@ -29,9 +29,11 @@
 import MovieListItem from './MovieListItem';
 
 export default {
+  name: 'MovieList',
   components: {
     MovieListItem
-  }
+  },
+  emits: ['load-more']
 }
 </script>
 
@@ -99,7 +101,8 @@ export default {
   display: grid;
   gap: 3rem 2rem;
   grid-auto-rows: auto;
-  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 14rem));
+  justify-content: space-evenly;
 }
 
 .load-more {
