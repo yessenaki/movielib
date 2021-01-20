@@ -7,7 +7,7 @@
     </div>
     <div class="movie-info">
       <span class="year">{{ movie.release_year }}</span>
-      <a href="#" :title="movie.title">{{ movie.title }}</a>
+      <a href="#" :title="movie.title">{{ movie.title ? movie.title : movie.original_title }}</a>
       <span class="genre">{{ movie.genres_string }}</span>
     </div>
   </div>
@@ -16,7 +16,7 @@
 <script>
 export default {
   name: 'MovieListItem',
-  inject: ['movies']
+  props: ['movies']
 }
 </script>
 

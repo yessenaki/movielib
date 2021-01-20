@@ -3,13 +3,22 @@
     <div class="wrap">
       <div class="header-content">
         <div class="home-link">
-          <a href="#">MovieLib</a>
+          <router-link to="/">MovieLib</router-link>
         </div>
         <nav>
           <ul class="menu" :style="menuIsVisible">
-            <li><a href="#">Trending</a></li>
-            <li><a href="#">Now Playing</a></li>
-            <li><a href="#">Upcoming</a></li>
+            <li>
+              <router-link to="/movies/trending">Trending</router-link>
+            </li>
+            <li>
+              <router-link to="/movies/top-rated">Top Rated</router-link>
+            </li>
+            <li>
+              <router-link to="/movies/now-playing">Now Playing</router-link>
+            </li>
+            <li>
+              <router-link to="/movies/upcoming">Upcoming</router-link>
+            </li>
           </ul>
         </nav>
         <i class="hamburger-icon" @click="toggleMenu"></i>
