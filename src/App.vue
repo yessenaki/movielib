@@ -1,7 +1,8 @@
 <template>
   <TheHeader />
-  <TheSearch />
-  <router-view v-if="apiConfig && genres"></router-view>
+  <main class="main">
+    <router-view v-if="apiConfig && genres"></router-view>
+  </main>
   <TheFooter />
 </template>
 
@@ -9,14 +10,12 @@
 import { computed } from 'vue';
 
 import TheHeader from './components/TheHeader.vue';
-import TheSearch from './components/TheSearch.vue';
 import TheFooter from './components/TheFooter.vue';
 
 export default {
   name: 'App',
   components: {
     TheHeader,
-    TheSearch,
     TheFooter,
   },
   data() {
@@ -32,6 +31,16 @@ export default {
       apiConfig: computed(() => this.apiConfig),
       genres: computed(() => this.genres)
     };
+  },
+  watch: {
+    $route(value) {
+      let isMovieDetails = /^\/?movies\/\w+/.test(value.path);
+      if (isMovieDetails) {
+        document.body.classList.add('page_details');
+      } else {
+        document.body.classList.remove('page_details');
+      }
+    }
   },
   methods: {
     async getAPIConfig() {
@@ -61,12 +70,12 @@ export default {
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
-
 * {
   box-sizing: border-box;
 }
 
 html {
+  height: 100%;
   font-size: 16px;
 }
 
@@ -75,22 +84,47 @@ body {
   font-size: 16px;
   background-color: #1c1c1c;
   margin: 0;
-  padding: 0;
+  height: 100%;
 }
 
-.wrap {
+.page_details .header {
+  position: absolute;
+}
+.page_details .nav {
+  background: transparent;
+}
+.page_details .search {
+  background-color: transparent;
+  box-shadow: none;
+}
+.page_details .main {
+  padding-top: 0;
+}
+
+.modal_open {
+  overflow: hidden;
+}
+
+#app {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
   max-width: 1290px;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 15px;
-  padding-right: 15px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+.container_full-height {
+  height: 100%;
 }
 
 img {
   width: 100%;
   height: 100%;
-  vertical-align: middle;
   object-fit: cover;
+  vertical-align: middle;
 }
 
 a {
@@ -99,7 +133,10 @@ a {
   text-decoration: none;
 }
 
-p {
+p,
+h1,
+h2,
+h3 {
   margin: 0;
 }
 
@@ -109,35 +146,20 @@ ul {
   padding: 0;
 }
 
-input, textarea, select {
+input,
+textarea,
+select {
   font-family: inherit;
 }
 
-@media (max-width: 675.98px) {
+.main {
+  flex: 1 0 auto;
+  padding-top: 10.5rem;
+}
+
+@media (max-width: 578px) {
   html {
     font-size: 14px;
-  }
-
-  .header-content {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .home-link a {
-    padding-right: 0;
-  }
-
-  .menu {
-    display: none;
-  }
-
-  .menu > li {
-    display: block;
-    margin-top: 15px;
-  }
-
-  .hamburger-icon {
-    display: block;
   }
 }
 </style>

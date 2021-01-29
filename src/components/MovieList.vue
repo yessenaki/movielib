@@ -1,28 +1,26 @@
 <template>
-  <main>
-    <div class="wrap">
-      <div class="movie-sort" v-if="type === 'popular'">
-        <div class="movie-filters-wrap">
-          <span class="current-movie-filter" @click="toggleFilters">{{ currentFilterTitle }}</span>
-          <ul class="movie-filters" v-if="filtersAreVisible" @click="changeFilter">
-            <li v-if="currentFilter !== 'popularity'" data-filter="popularity">Popularity</li>
-            <li v-if="currentFilter !== 'original_title'" data-filter="original_title">Title</li>
-            <li v-if="currentFilter !== 'revenue'" data-filter="revenue">Revenue</li>
-            <li v-if="currentFilter !== 'release_date'" data-filter="release_date">Release date</li>
-            <li v-if="currentFilter !== 'vote_average'" data-filter="vote_average">Vote average</li>
-            <li v-if="currentFilter !== 'vote_count'" data-filter="vote_count">Vote count</li>
-          </ul>
-        </div>
-        <div>
-          <i class="arrow-symbol" @click="changeSort">{{ this.sort === 'desc' ? '&#8595;' : '&#8593;' }}</i>
-        </div>
+  <div class="container">
+    <div class="movie-sort" v-if="type === 'popular'">
+      <div class="sort-filter">
+        <span class="sort-filter__current" @click="toggleFilters">{{ currentFilterName }}</span>
+        <ul class="sort-filter__list" @click="changeFilter" v-if="filtersAreVisible">
+          <li class="sort-filter__item" data-filter="popularity" v-if="currentFilter !== 'popularity'">Popular</li>
+          <li class="sort-filter__item" data-filter="original_title" v-if="currentFilter !== 'original_title'">Title</li>
+          <li class="sort-filter__item" data-filter="revenue" v-if="currentFilter !== 'revenue'">Revenue</li>
+          <li class="sort-filter__item" data-filter="release_date" v-if="currentFilter !== 'release_date'">Release</li>
+          <li class="sort-filter__item" data-filter="vote_average" v-if="currentFilter !== 'vote_average'">Vote average</li>
+          <li class="sort-filter__item" data-filter="vote_count" v-if="currentFilter !== 'vote_count'">Vote count</li>
+        </ul>
       </div>
-      <div class="movie-list">
-        <MovieListItem :movies="movies" />
+      <div class="sort-order">
+        <i class="sort-order__direction" @click="changeSort">{{ this.sort === 'desc' ? '&#8595;' : '&#8593;' }}</i>
       </div>
-      <div class="load-more" @click="getMovies(type)">Load more</div>
     </div>
-  </main>
+    <div class="movie-list">
+      <MovieListItem :movies="movies" />
+    </div>
+    <div class="load-more" @click="getMovies(type)">Load more</div>
+  </div>
 </template>
 
 <script>
@@ -33,7 +31,7 @@ export default {
   components: {
     MovieListItem
   },
-  props: ['type'],
+  props: ['type', 'genreId'],
   inject: ['apiKey', 'apiConfig', 'genres'],
   data() {
     return {
@@ -41,7 +39,7 @@ export default {
       page: 1,
       sort: 'desc',
       currentFilter: 'popularity',
-      currentFilterTitle: 'Popularity',
+      currentFilterName: 'Popularity',
       filtersAreVisible: false
     };
   },
@@ -54,7 +52,7 @@ export default {
   },
   methods: {
     changeFilter(event) {
-      this.currentFilterTitle = event.target.innerText;
+      this.currentFilterName = event.target.innerText;
       this.currentFilter = event.target.getAttribute('data-filter');
       this.movies = [];
       this.page = 1;
@@ -87,10 +85,14 @@ export default {
         response = await fetch(
           `https://api.themoviedb.org/3/movie/upcoming?api_key=${this.apiKey}&page=${this.page}`
         );
-      } else {
+      } else if (type === 'popular') {
         let sortBy = `${this.currentFilter}.${this.sort}`;
         let url = `https://api.themoviedb.org/3/discover/movie?api_key=${this.apiKey}&language=en-US`;
         url += `&certification_country=US&certification.lte=R&sort_by=${sortBy}&page=${this.page}`;
+        response = await fetch(url);
+      } else {
+        let url = `https://api.themoviedb.org/3/discover/movie?api_key=${this.apiKey}&with_genres=${this.genreId}`;
+        url += `&language=en-US&certification_country=US&certification.lte=R&page=${this.page}`;
         response = await fetch(url);
       }
 
@@ -125,39 +127,32 @@ export default {
 </script>
 
 <style>
-main {
-  margin-top: 2rem;
-}
-
 .movie-sort {
   display: flex;
   flex-direction: row-reverse;
 }
 
-.movie-filters-wrap {
+.sort-filter {
   position: relative;
   cursor: pointer;
-  z-index: 1;
 }
-
-.current-movie-filter {
+.sort-filter__current {
   display: inline-block;
   padding: 5px 10px;
   color: #626262;
   font-size: 14px;
 }
-
-.movie-filters {
+.sort-filter__list {
   position: absolute;
   top: 100%;
   right: 0;
+  z-index: 1;
   background-color: #a91f49;
   min-width: 170px;
   -webkit-transition: opacity 0.2s ease 0s, top 0.2s ease 0s;
   transition: opacity 0.2s ease 0s, top 0.2s ease 0s;
 }
-
-.movie-filters li {
+.sort-filter__item {
   display: inline-block;
   padding: 5px 10px;
   color: #fff;
@@ -169,12 +164,14 @@ main {
   -webkit-transition: background 0.2s ease 0s;
   transition: background 0.2s ease 0s;
 }
-
-.movie-filters li:hover {
+.sort-filter__item:last-child {
+  border: none;
+}
+.sort-filter__item:hover {
   background-color: #7e0046;
 }
 
-.arrow-symbol {
+.sort-order__direction {
   font-size: 17px;
   color: #626262;
   cursor: pointer;
@@ -200,7 +197,6 @@ main {
   cursor: pointer;
   text-transform: uppercase;
 }
-
 .load-more:active {
   opacity: 0.8;
 }

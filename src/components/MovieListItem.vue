@@ -1,14 +1,18 @@
 <template>
   <div class="movie-item" v-for="movie in movies" :key="movie.id">
-    <div class="movie-poster">
-      <a href="#">
+    <div class="movie-item__image-frame">
+      <router-link :to="`/movies/${movie.id}`">
         <img :src="movie.poster_full_path" :alt="movie.title">
-      </a>
+      </router-link>
     </div>
-    <div class="movie-info">
-      <span class="year">{{ movie.release_year }}</span>
-      <a href="#" :title="movie.title">{{ movie.title ? movie.title : movie.original_title }}</a>
-      <span class="genre">{{ movie.genres_string }}</span>
+    <div class="movie-item__info">
+      <span class="movie-item__year">{{ movie.release_year }}</span>
+      <router-link
+        :to="`/movies/${movie.id}`"
+        class="movie-item__link"
+        :title="movie.title"
+      >{{ movie.title ? movie.title : movie.original_title }}</router-link>
+      <span class="movie-item__genre">{{ movie.genres_string }}</span>
     </div>
   </div>
 </template>
@@ -21,25 +25,23 @@ export default {
 </script>
 
 <style>
-.movie-poster {
+.movie-item__image-frame {
   height: 21rem;
 }
-
-.movie-poster:hover {
+.movie-item__image-frame:hover {
   -webkit-box-shadow: 0 0 3px 3px #a91f49;
   box-shadow: 0 0 3px 3px #a91f49;
 }
-
-.movie-poster:active {
+.movie-item__image-frame:active {
   -webkit-box-shadow: 0 0 3px 3px #7e0046;
   box-shadow: 0 0 3px 3px #7e0046;
 }
 
-.movie-info {
+.movie-item__info {
   margin-top: 1.25rem;
 }
 
-.movie-info a {
+.movie-item__link {
   display: block;
   font-size: 1rem;
   color: #989898;
@@ -48,16 +50,15 @@ export default {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-
-.movie-info a:hover {
+.movie-item__link:hover {
   color: #a91f49;
 }
-
-.movie-info a:active {
+.movie-item__link:active {
   color: #7e0046;
 }
 
-.movie-info span {
+.movie-item__year,
+.movie-item__genre {
   display: block;
   font-size: 0.875rem;
   color: #626262;
