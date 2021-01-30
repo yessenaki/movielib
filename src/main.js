@@ -8,10 +8,10 @@ const app = createApp(App);
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    { path: '/', redirect: '/discover/popular' },
+    { path: '/', redirect: '/discover/all' },
     { path: '/discover/:type', component: MovieList, props: true },
     { path: '/movies/:id', component: MovieDetails, props: true },
-    { path: '/genres/:genreId', component: MovieList, props: true }
+    { path: '/genres/:genre', component: MovieList, props: true }
   ]
 });
 

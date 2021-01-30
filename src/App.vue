@@ -1,7 +1,7 @@
 <template>
   <TheHeader />
   <main class="main">
-    <router-view v-if="apiConfig && genres"></router-view>
+    <router-view v-if="apiConfig && genresWithIdKey"></router-view>
   </main>
   <TheFooter />
 </template>
@@ -22,14 +22,16 @@ export default {
     return {
       apiKey: '******',
       apiConfig: null,
-      genres: null
+      genresWithIdKey: null,
+      genresWithNameKey: null
     };
   },
   provide() {
     return {
       apiKey: this.apiKey,
       apiConfig: computed(() => this.apiConfig),
-      genres: computed(() => this.genres)
+      genresWithIdKey: computed(() => this.genresWithIdKey),
+      genresWithNameKey: computed(() => this.genresWithNameKey)
     };
   },
   watch: {
@@ -53,12 +55,17 @@ export default {
       const response = await fetch(`https://api.themoviedb.org/3/genre/movie/list?api_key=${this.apiKey}`);
       const data = await response.json();
 
-      let genres = new Map();
+      let genresWithIdKey = new Map();
+      let genresWithNameKey = new Map();
       for (let genre of data.genres) {
-        genres.set(genre.id, genre.name);
+        genresWithIdKey.set(genre.id, genre.name);
+        
+        let name = genre.name.toLowerCase().replaceAll(' ', '-');
+        genresWithNameKey.set(name, genre.id);
       }
 
-      this.genres = genres;
+      this.genresWithIdKey = genresWithIdKey;
+      this.genresWithNameKey = genresWithNameKey;
     }
   },
   created() {

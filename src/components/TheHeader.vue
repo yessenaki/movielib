@@ -1,6 +1,6 @@
 <template>
   <header class="header">
-    <nav class="nav">
+    <nav class="nav" id="nav">
       <div class="container">
         <div class="nav__content">
           <div class="nav__home">
@@ -67,6 +67,12 @@ export default {
   background: -webkit-gradient(linear, left top, right top, from(#7e0046), to(#a91f49));
   background: linear-gradient(to right, #7e0046, #a91f49);
   padding: 1.5rem 0;
+  -webkit-transition: opacity 0.7s ease 0.1s, padding-top 0.2s ease 0s, padding-bottom 0.2s ease 0s;
+  transition: opacity 0.7s ease 0.1s, padding-top 0.2s ease 0s, padding-bottom 0.2s ease 0s;
+}
+.nav_small {
+  padding: 0.7rem 0;
+  opacity: 0.97;
 }
 
 .nav__content {

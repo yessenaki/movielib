@@ -1,6 +1,7 @@
 <template>
-  <div class="container">
-    <div class="movie-sort" v-if="type === 'popular'">
+  <TheSpinner v-if="isLoading" />
+  <div class="container" v-else>
+    <div class="movie-sort" v-if="type === 'all'">
       <div class="sort-filter">
         <span class="sort-filter__current" @click="toggleFilters">{{ currentFilterName }}</span>
         <ul class="sort-filter__list" @click="changeFilter" v-if="filtersAreVisible">
@@ -19,22 +20,25 @@
     <div class="movie-list">
       <MovieListItem :movies="movies" />
     </div>
-    <div class="load-more" @click="getMovies(type)">Load more</div>
+    <div class="load-more" @click="getMovies()">Load more</div>
   </div>
 </template>
 
 <script>
-import MovieListItem from './MovieListItem';
+import MovieListItem from './MovieListItem.vue';
+import TheSpinner from './TheSpinner.vue';
 
 export default {
   name: 'MovieList',
   components: {
-    MovieListItem
+    MovieListItem,
+    TheSpinner
   },
-  props: ['type', 'genreId'],
-  inject: ['apiKey', 'apiConfig', 'genres'],
+  props: ['type', 'genre'],
+  inject: ['apiKey', 'apiConfig', 'genresWithIdKey', 'genresWithNameKey'],
   data() {
     return {
+      isLoading: false,
       movies: [],
       page: 1,
       sort: 'desc',
@@ -44,10 +48,10 @@ export default {
     };
   },
   watch: {
-    type(value) {
+    type() {
       this.movies = [];
       this.page = 1;
-      this.getMovies(value);
+      this.getMovies();
     }
   },
   methods: {
@@ -67,32 +71,42 @@ export default {
     toggleFilters() {
       this.filtersAreVisible = !this.filtersAreVisible;
     },
-    async getMovies(type) {
+    async getMovies() {
+      this.isLoading = true;
+
+      let genreId;
+      if (this.genre) {
+        let id = this.genresWithNameKey.value.get(this.genre);
+        if (id) {
+          genreId = id;
+        }
+      }
+
       let response = null;
-      if (type === 'trending') {
+      if (this.type === 'trending') {
         response = await fetch(
           `https://api.themoviedb.org/3/trending/movie/day?api_key=${this.apiKey}&page=${this.page}`
         );
-      } else if (type === 'top-rated') {
+      } else if (this.type === 'top-rated') {
         response = await fetch(
           `https://api.themoviedb.org/3/movie/top_rated?api_key=${this.apiKey}&page=${this.page}`
         );
-      } else if (type === 'now-playing') {
+      } else if (this.type === 'now-playing') {
         response = await fetch(
           `https://api.themoviedb.org/3/movie/now_playing?api_key=${this.apiKey}&page=${this.page}`
         );
-      } else if (type === 'upcoming') {
+      } else if (this.type === 'upcoming') {
         response = await fetch(
           `https://api.themoviedb.org/3/movie/upcoming?api_key=${this.apiKey}&page=${this.page}`
         );
-      } else if (type === 'popular') {
+      } else if (!this.type && genreId) {
+        let url = `https://api.themoviedb.org/3/discover/movie?api_key=${this.apiKey}&with_genres=${genreId}`;
+        url += `&language=en-US&certification_country=US&certification.lte=R&page=${this.page}`;
+        response = await fetch(url);
+      } else {
         let sortBy = `${this.currentFilter}.${this.sort}`;
         let url = `https://api.themoviedb.org/3/discover/movie?api_key=${this.apiKey}&language=en-US`;
         url += `&certification_country=US&certification.lte=R&sort_by=${sortBy}&page=${this.page}`;
-        response = await fetch(url);
-      } else {
-        let url = `https://api.themoviedb.org/3/discover/movie?api_key=${this.apiKey}&with_genres=${this.genreId}`;
-        url += `&language=en-US&certification_country=US&certification.lte=R&page=${this.page}`;
         response = await fetch(url);
       }
 
@@ -108,7 +122,7 @@ export default {
 
         let genreCount = movie.genre_ids.length;
         movie.genre_ids.forEach((value, index) => {
-          movie.genres_string += this.genres.value.get(value);
+          movie.genres_string += this.genresWithIdKey.value.get(value);
           if (genreCount > index + 1) {
             movie.genres_string += ', ';
           }
@@ -118,10 +132,24 @@ export default {
       }
 
       this.page++;
+      this.isLoading = false;
+    },
+    handleScroll() {
+      const nav = document.getElementById('nav');
+      if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+        nav.classList.add('nav_small');
+      } else {
+        nav.classList.remove('nav_small');
+      }
     }
   },
   created() {
-    this.getMovies(this.type);
+    this.getMovies();
+    window.addEventListener('scroll', this.handleScroll);
+  },
+  unmounted() {
+    window.removeEventListener('scroll', this.handleScroll);
+    document.getElementById('nav').classList.remove('nav_small');
   }
 }
 </script>

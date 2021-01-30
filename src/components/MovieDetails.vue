@@ -17,7 +17,7 @@
                   class="movie-genre__link"
                   v-for="genre in movie.genres"
                   :key="genre.id"
-                  :to="`/genres/${genre.id}`"
+                  :to="`/genres/${genre.name.toLowerCase().replaceAll(' ', '-')}`"
                 >{{ genre.name }}</router-link>
               </div>
             </div>
