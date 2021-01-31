@@ -26,9 +26,9 @@
     </nav>
     <div class="search">
       <div class="container">
-        <form class="search__form">
+        <form class="search__form" @submit.prevent="search">
           <i class="icon-search"></i>
-          <input type="text" class="search__input" placeholder="Search">
+          <input type="text" class="search__input" placeholder="Search" v-model="query">
         </form>
       </div>
     </div>
@@ -40,7 +40,8 @@ export default {
   name: 'TheHeader',
   data() {
     return {
-      isVisible: false
+      isVisible: false,
+      query: ''
     };
   },
   computed: {
@@ -51,6 +52,10 @@ export default {
   methods: {
     toggleMenu() {
       this.isVisible = !this.isVisible;
+    },
+    search() {
+      this.$router.push({ path: '/search', query: { q: this.query } });
+      this.query = '';
     }
   }
 }

@@ -1,5 +1,5 @@
 <template>
-  <TheSpinner v-if="isLoading" />
+  <TheSpinner v-if="isLoading && page === 1" />
   <div class="container" v-else>
     <div class="movie-sort" v-if="type === 'all'">
       <div class="sort-filter">
@@ -17,10 +17,11 @@
         <i class="sort-order__direction" @click="changeSort">{{ this.sort === 'desc' ? '&#8595;' : '&#8593;' }}</i>
       </div>
     </div>
-    <div class="movie-list">
+    <div class="movie-list" v-if="totalPages">
       <MovieListItem :movies="movies" />
     </div>
-    <div class="load-more" @click="getMovies()">Load more</div>
+    <p class="nothing-found" v-else>Nothing found</p>
+    <div class="load-more" @click="getMovies()" v-if="totalPages > page">Load more</div>
   </div>
 </template>
 
@@ -34,30 +35,41 @@ export default {
     MovieListItem,
     TheSpinner
   },
-  props: ['type', 'genre'],
   inject: ['apiKey', 'apiConfig', 'genresWithIdKey', 'genresWithNameKey'],
   data() {
     return {
       isLoading: false,
       movies: [],
       page: 1,
+      totalPages: 0,
       sort: 'desc',
       currentFilter: 'popularity',
       currentFilterName: 'Popularity',
-      filtersAreVisible: false
+      filtersAreVisible: false,
+      type: null,
+      genreId: 0,
+      queryText: null
     };
   },
   watch: {
-    type() {
+    $route(value) {
       this.movies = [];
       this.page = 1;
-      this.getMovies();
+      this.type = null;
+      this.genreId = 0;
+      this.queryText = null;
+
+      this.initializeVariables(value);
+      if (this.type || this.genreId || this.queryText) {
+        this.getMovies();
+      }
     }
   },
   methods: {
     changeFilter(event) {
       this.currentFilterName = event.target.innerText;
       this.currentFilter = event.target.getAttribute('data-filter');
+      this.filtersAreVisible = false;
       this.movies = [];
       this.page = 1;
       this.getMovies();
@@ -71,45 +83,43 @@ export default {
     toggleFilters() {
       this.filtersAreVisible = !this.filtersAreVisible;
     },
+    initializeVariables(route) {
+      if (route.params.type) {
+        this.type = route.params.type;
+      }
+
+      if (this.$route.params.genre) {
+        let id = this.genresWithNameKey.value.get(route.params.genre);
+        this.genreId = id;
+      }
+
+      if (route.path === '/search' && route.query.q) {
+        this.queryText = this.$route.query.q;
+      }
+    },
     async getMovies() {
       this.isLoading = true;
+      console.log(this.type, this.genreId, this.queryText);
 
-      let genreId;
-      if (this.genre) {
-        let id = this.genresWithNameKey.value.get(this.genre);
-        if (id) {
-          genreId = id;
-        }
-      }
-
-      let response = null;
+      let url = 'https://api.themoviedb.org/3';
       if (this.type === 'trending') {
-        response = await fetch(
-          `https://api.themoviedb.org/3/trending/movie/day?api_key=${this.apiKey}&page=${this.page}`
-        );
+        url += '/trending/movie/day?';
       } else if (this.type === 'top-rated') {
-        response = await fetch(
-          `https://api.themoviedb.org/3/movie/top_rated?api_key=${this.apiKey}&page=${this.page}`
-        );
+        url += '/movie/top_rated?';
       } else if (this.type === 'now-playing') {
-        response = await fetch(
-          `https://api.themoviedb.org/3/movie/now_playing?api_key=${this.apiKey}&page=${this.page}`
-        );
+        url += '/movie/now_playing?';
       } else if (this.type === 'upcoming') {
-        response = await fetch(
-          `https://api.themoviedb.org/3/movie/upcoming?api_key=${this.apiKey}&page=${this.page}`
-        );
-      } else if (!this.type && genreId) {
-        let url = `https://api.themoviedb.org/3/discover/movie?api_key=${this.apiKey}&with_genres=${genreId}`;
-        url += `&language=en-US&certification_country=US&certification.lte=R&page=${this.page}`;
-        response = await fetch(url);
+        url += '/movie/upcoming?';
+      } else if (this.genreId) {
+        url += `/discover/movie?with_genres=${this.genreId}&certification_country=US&certification.lte=R&`;
+      } else if (this.queryText) {
+        url += `/search/movie?query=${this.queryText}&inclue_adult=false&`;
       } else {
         let sortBy = `${this.currentFilter}.${this.sort}`;
-        let url = `https://api.themoviedb.org/3/discover/movie?api_key=${this.apiKey}&language=en-US`;
-        url += `&certification_country=US&certification.lte=R&sort_by=${sortBy}&page=${this.page}`;
-        response = await fetch(url);
+        url += `/discover/movie?sort_by=${sortBy}&certification_country=US&certification.lte=R&`;
       }
 
+      const response = await fetch(`${url}api_key=${this.apiKey}&page=${this.page}`);
       const data = await response.json();
       console.log(data);
       const imageConfig = this.apiConfig.value.images;
@@ -132,6 +142,7 @@ export default {
       }
 
       this.page++;
+      this.totalPages = data.total_pages;
       this.isLoading = false;
     },
     handleScroll() {
@@ -144,6 +155,7 @@ export default {
     }
   },
   created() {
+    this.initializeVariables(this.$route);
     this.getMovies();
     window.addEventListener('scroll', this.handleScroll);
   },
@@ -213,6 +225,11 @@ export default {
   grid-auto-rows: auto;
   grid-template-columns: repeat(auto-fill, minmax(11rem, 14rem));
   justify-content: space-evenly;
+}
+
+.nothing-found {
+  font-size: 2rem;
+  color: #484848;
 }
 
 .load-more {

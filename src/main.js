@@ -9,9 +9,10 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: '/', redirect: '/discover/all' },
-    { path: '/discover/:type', component: MovieList, props: true },
+    { path: '/discover/:type', component: MovieList },
     { path: '/movies/:id', component: MovieDetails, props: true },
-    { path: '/genres/:genre', component: MovieList, props: true }
+    { path: '/genres/:genre', component: MovieList },
+    { path: '/search', component: MovieList }
   ]
 });
 
