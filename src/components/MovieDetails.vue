@@ -59,7 +59,7 @@ export default {
     ModalDialog
   },
   props: ['id'],
-  inject: ['apiKey', 'apiConfig'],
+  inject: ['apiConfig'],
   data() {
     return {
       movie: {},
@@ -109,9 +109,9 @@ export default {
       }
     },
     async getMovie() {
-      const response = await fetch(`https://api.themoviedb.org/3/movie/${this.id}?api_key=${this.apiKey}&append_to_response=videos`);
+      const response = await fetch(`https://api.themoviedb.org/3/movie/${this.id}?api_key=${process.env.VUE_APP_API_KEY}&append_to_response=videos`);
       const data = await response.json();
-      console.log(data);
+
       this.movie = data;
       this.overview = data.overview;
       this.findTrailer();

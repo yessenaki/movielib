@@ -35,7 +35,7 @@ export default {
     MovieListItem,
     TheSpinner
   },
-  inject: ['apiKey', 'apiConfig', 'genresWithIdKey', 'genresWithNameKey'],
+  inject: ['apiConfig', 'genresWithIdKey', 'genresWithNameKey'],
   data() {
     return {
       isLoading: false,
@@ -99,7 +99,6 @@ export default {
     },
     async getMovies() {
       this.isLoading = true;
-      console.log(this.type, this.genreId, this.queryText);
 
       let url = 'https://api.themoviedb.org/3';
       if (this.type === 'trending') {
@@ -119,9 +118,8 @@ export default {
         url += `/discover/movie?sort_by=${sortBy}&certification_country=US&certification.lte=R&`;
       }
 
-      const response = await fetch(`${url}api_key=${this.apiKey}&page=${this.page}`);
+      const response = await fetch(`${url}api_key=${process.env.VUE_APP_API_KEY}&page=${this.page}`);
       const data = await response.json();
-      console.log(data);
       const imageConfig = this.apiConfig.value.images;
       const imageBaseURL = imageConfig.secure_base_url + imageConfig.poster_sizes[3];
 

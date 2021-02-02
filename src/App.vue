@@ -20,7 +20,6 @@ export default {
   },
   data() {
     return {
-      apiKey: '******',
       apiConfig: null,
       genresWithIdKey: null,
       genresWithNameKey: null
@@ -28,7 +27,6 @@ export default {
   },
   provide() {
     return {
-      apiKey: this.apiKey,
       apiConfig: computed(() => this.apiConfig),
       genresWithIdKey: computed(() => this.genresWithIdKey),
       genresWithNameKey: computed(() => this.genresWithNameKey)
@@ -46,13 +44,13 @@ export default {
   },
   methods: {
     async getAPIConfig() {
-      const response = await fetch(`https://api.themoviedb.org/3/configuration?api_key=${this.apiKey}`);
+      const response = await fetch(`https://api.themoviedb.org/3/configuration?api_key=${process.env.VUE_APP_API_KEY}`);
       const data = await response.json();
 
       this.apiConfig = data;
     },
     async getGenres() {
-      const response = await fetch(`https://api.themoviedb.org/3/genre/movie/list?api_key=${this.apiKey}`);
+      const response = await fetch(`https://api.themoviedb.org/3/genre/movie/list?api_key=${process.env.VUE_APP_API_KEY}`);
       const data = await response.json();
 
       let genresWithIdKey = new Map();
