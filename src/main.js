@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import App from './App.vue';
 import MovieList from './components/MovieList.vue';
 import MovieDetails from './components/MovieDetails.vue';
+import NotFound from './components/NotFound.vue';
 
 const app = createApp(App);
 const router = createRouter({
@@ -12,7 +13,8 @@ const router = createRouter({
     { path: '/discover/:type', component: MovieList },
     { path: '/movies/:id', name: 'movie', component: MovieDetails, props: true },
     { path: '/genres/:genre', component: MovieList },
-    { path: '/search', component: MovieList, meta: { title: 'Search' } }
+    { path: '/search', component: MovieList, meta: { title: 'Search' } },
+    { path: '/:notFound(.*)*', component: NotFound }
   ]
 });
 
