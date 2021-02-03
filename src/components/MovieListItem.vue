@@ -1,17 +1,17 @@
 <template>
   <div class="movie-item" v-for="movie in movies" :key="movie.id">
     <div class="movie-item__image-frame">
-      <router-link :to="`/movies/${movie.id}`">
-        <img :src="movie.poster_full_path" :alt="movie.title">
+      <router-link :to="{ name: 'movie', params: { id: movie.id } }">
+        <img :src="movie.poster_full_path" :alt="movie.finalTitle">
       </router-link>
     </div>
     <div class="movie-item__info">
       <span class="movie-item__year">{{ movie.release_year }}</span>
       <router-link
-        :to="`/movies/${movie.id}`"
+        :to="{ name: 'movie', params: { id: movie.id } }"
         class="movie-item__link"
-        :title="movie.title"
-      >{{ movie.title ? movie.title : movie.original_title }}</router-link>
+        :title="movie.finalTitle"
+      >{{ movie.finalTitle }}</router-link>
       <span class="movie-item__genre">{{ movie.genres_string }}</span>
     </div>
   </div>

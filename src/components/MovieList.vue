@@ -126,6 +126,7 @@ export default {
       for (let movie of data.results) {
         movie.poster_full_path = movie.poster_path ? imageBaseURL + movie.poster_path : '/static/img/no-image.png';
         movie.release_year = movie.release_date ? new Date(movie.release_date).getFullYear() : 'unknown';
+        movie.finalTitle = movie.title ? movie.title : movie.original_title;
         movie.genres_string = '';
 
         let genreCount = movie.genre_ids.length;
